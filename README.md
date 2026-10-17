@@ -198,19 +198,19 @@ $$
 Se iguala esa aproximación al lado derecho de la EDO evaluado en el instante $k$:
 
 $$
-\frac{\omega(k+1)-\omega(k)}{T_s} = \frac{1}{\tau_m}\big(K\,v(k) - \omega(k)\big)
+\frac{\omega(k+1)-\omega(k)}{T_s} = \frac{1}{\tau_m}\big(K v(k) - \omega(k)\big)
 $$
 
 Se multiplica por $T_s$ y se despeja $\omega(k+1)$:
 
 $$
-\omega(k+1) = \omega(k) + \frac{T_s}{\tau_m}\big(K\,v(k)-\omega(k)\big)
+\omega(k+1) = \omega(k) + \frac{T_s}{\tau_m}\big(K v(k)-\omega(k)\big)
 $$
 
 Se agrupan los términos en $\omega(k)$ y en $v(k)$:
 
 $$
-\boxed{\omega(k+1) = \Big(1 - \frac{T_s}{\tau_m}\Big)\omega(k) + \frac{T_s\,K}{\tau_m}\,v(k)}
+\boxed{\omega(k+1) = \Big(1 - \frac{T_s}{\tau_m}\Big)\omega(k) + \frac{T_s\,K}{\tau_m} v(k)}
 $$
 
 ###### Definición de elementos
@@ -282,3 +282,58 @@ $$
 | Estabilidad                                      | $T_s < 2\tau_m$     | $\approx 71{,}4$ ms |
 | Sin oscilaciones                                 | $T_s \le \tau_m$    | $\approx 35{,}7$ ms |
 | Buena precisión (8 - 12 muestras por cada $T_s$) | $T_s \le \tau_m/10$ | $\approx 3{,}6$ ms  |
+
+###### Régimen permanente y solución exacta del DESS
+
+Se considera una entrada constante $v(t)=u$ siendo $u=5V$ y una condición inicial $\omega(0)=x_0$. La ecuación del DESS es
+
+$$
+\tau_m\,\dot\omega + \omega = K\,u, \qquad \omega(0)=x_0
+$$
+
+**Régimen permanente.** Es el valor al que tiende $\omega$ cuando deja de cambiar, es decir, $\dot\omega=0$:
+
+$$
+\tau_m\cdot 0 + \omega_{ss} = K\,u
+\;\;\Longrightarrow\;\;
+\boxed{\omega_{ss} = K\,u}
+$$
+
+Con los valores de la tabla, $\omega_{ss} = K u \approx 285 \cdot 5 \approx 1425$ rad/s. ***(pendiente de verificar valores)***
+
+**Solución exacta.** Se define el error respecto al régimen permanente:
+
+$$
+e(t) = \omega(t) - K\,u
+$$
+
+Como $K u$ es constante, $\dot e = \dot\omega$. Sustituyendo $\omega = e + Ku$ en la EDO:
+
+$$
+\tau_m\,\dot e + e + Ku = Ku
+\;\;\Longrightarrow\;\;
+\dot e = -\frac{1}{\tau_m}\,e
+$$
+
+Es una EDO lineal homogénea de primer orden, cuya solución es una exponencial decreciente:
+
+$$
+e(t) = e(0)\,e^{-t/\tau_m}, \qquad e(0) = x_0 - Ku
+$$
+
+Deshaciendo el cambio de variable, $\omega(t) = Ku + e(t)$:
+
+$$
+\omega(t) = Ku + (x_0 - Ku)\,e^{-t/\tau_m}
+$$
+
+que, reordenada, queda
+
+$$
+\boxed{\omega(t) = K\,u\,\big(1 - e^{-t/\tau_m}\big) + x_0\,e^{-t/\tau_m}}
+$$
+
+| Término                 | Significado                                                |
+| ----------------------- | ---------------------------------------------------------- |
+| $Ku\,(1-e^{-t/\tau_m})$ | Parte que sube desde 0 hasta $Ku$ por efecto de la tensión |
+| $x_0\,e^{-t/\tau_m}$    | Efecto de la velocidad inicial, que se va olvidando        |

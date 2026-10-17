@@ -20,7 +20,9 @@ x0 = 0;                        % Motor parado [rad/s]
 u  = 5;                        % Tensión constante [V]
 s  = 10;                       % Muestras por tau_m
 Ts = tau_m / s;                % Periodo de muestreo [s]
-N  = ceil(0.5 / Ts);             % Sumalar 0.5s
+N  = ceil(0.5 / Ts);           % Sumalar durante 0.5s
+
+xss = K*u;                     % Regimen permanente
 
 assert(Ts <= tau_m, 'Ts debe ser <= tau_m (estabilidad y sin oscilaciones)');
 
@@ -28,9 +30,13 @@ assert(Ts <= tau_m, 'Ts debe ser <= tau_m (estabilidad y sin oscilaciones)');
 
 [t_vec, x_vec] = simulate_euler(x0, u, tau_m, K, Ts, N);
 
+w_exacta = K*u*(1 - exp(-t_vec/tau_m)) + x0*exp(-t_vec/tau_m);
+
 figure;
 plot(t_vec, x_vec, 'o-', 'DisplayName', sprintf('Euler (T_s = %.2f ms)', Ts*1e3));
 hold on;
+plot(t_vec, w_exacta, '-', 'LineWidth', 1.5, 'DisplayName', 'Exacta (continuo)');
+yline(xss, '--', 'DisplayName', 'regimen permanente');
 xlabel('t [s]');
 ylabel('\omega [rad/s]');
 title(sprintf('Respuesta al escalón de %g V', u));
