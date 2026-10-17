@@ -2,7 +2,7 @@
 * @author Stefan Oshchypok, Anthony Manzueta Difo
 *
 * Universidad Carlos III de Madrid
-* Master Robotica y Automatizacion
+* Máster Universitario en Robótica y Automatización
 * Asignatura: Modelizacion y Simulacion de Sistemas Dinamicos
 * Curso: 2026 - 2027
 *
