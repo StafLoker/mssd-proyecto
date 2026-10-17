@@ -54,7 +54,7 @@ En la segunda fase, se añadirá el sensor (no se simula sino considera como ent
 
 ### Primera fase
 
-Primero, el driver. Como se ha mencionado no se cuenta como un componente que influye a la salida de motor. Sin embargo en esta fase se considera que se rota en un sentido, o sea *DIR_A = 5V* y *DIR_B = 0V*. Al ser que se simplifica que solo se rota en un sentido (Forward) por lo que la salidas de driver sera: *OUT_A = V_in V + 700 mA* ***(pendiente de verificar valor de corriente final)*** (lo que envía Arduino) y *OUT_B = 0 V*. Corriente de salida: **700 mA** y Rango de tensiones: **0V - 5V** (valor de corriente cogidos de este [fuente](https://wiki.elegoo.com/oshw-getting-started-&-kits/dc-motor-uno)).
+Primero, el driver. Como se ha mencionado no se cuenta como un componente que influye a la salida de motor. Sin embargo en esta fase se considera que se rota en un sentido, o sea *DIR_A = 5V* y *DIR_B = 0V*. Al ser que se simplifica que solo se rota en un sentido (Forward) por lo que la salidas de driver sera: *OUT_A = V_in V + 700 mA* ***(pendiente de verificar valor de corriente final)*** y *OUT_B = 0 V*. Corriente de salida: **700 mA** y Rango de tensiones: **0V - 5V** (valor de corriente cogidos de este [fuente](https://wiki.elegoo.com/oshw-getting-started-&-kits/dc-motor-uno)).
 
 Ahora se queda la parte interesante es Motor DC con encoder.
 
@@ -71,7 +71,7 @@ Ahora se queda la parte interesante es Motor DC con encoder.
 | Resistencia de armadura                 | $R$     | 10,3       | Ω         |
 | Inductancia de armadura                 | $L$     | 0,0711     | mH        |
 
-En unidades del SI, $K_t = K_e$.
+En unidades del SI, $K_t = K_e$ (conservacion de la energía).
 
 ##### Variables del modelo
 
