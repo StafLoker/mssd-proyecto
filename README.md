@@ -251,16 +251,16 @@ $$
 Con un solo estado, el autovalor del sistema es el propio coeficiente $a$. Con $v(k)=0$:
 
 $$
-\omega(k+1) = a\,\omega(k) \;\Rightarrow\; \omega(k) = a^k\,\omega(0)
+\omega(k+1) = a\,\omega(k) \Rightarrow\ \omega(k) = a^k\,\omega(0)
 $$
 
 Por tanto $\omega(k)\to0$ si y solo si $|a|<1$ (autovalor dentro del círculo unidad):
 
 $$
 \left|1-\frac{T_s}{\tau_m}\right|<1
-\;\Longleftrightarrow\;
+\ \Longleftrightarrow\
 -1 < 1-\frac{T_s}{\tau_m} < 1
-\;\Longleftrightarrow\;
+\ \Longleftrightarrow\
 0 < \frac{T_s}{\tau_m} < 2
 $$
 
@@ -271,7 +271,7 @@ $$
 **Ausencia de oscilaciones numéricas.** Si $-1<a<0$, el sistema es estable pero $\omega(k)=a^k\omega(0)$ cambia de signo en cada paso. El sistema continuo, de primer orden, no oscila nunca, luego esa oscilación es un artefacto del método. Para evitarla se exige $a\ge0$:
 
 $$
-1-\frac{T_s}{\tau_m}\ge0 \;\Longrightarrow\; T_s\le\tau_m
+1-\frac{T_s}{\tau_m}\ge0 \Longrightarrow\ T_s\le\tau_m
 $$
 
 **Valores para el motor** ($\tau_m \approx 0{,}0357$ s) ***(pendiente de verificar valores)***:
