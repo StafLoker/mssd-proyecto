@@ -106,11 +106,12 @@ El sistema tiene dos almacenes de energía (la bobina $L$ y la inercia $J$), es 
 
 > [!NOTE]
 > Justification porque se desprecia la parte de dominio eléctrico sin contar es un limitation planteado para modelado. ***(pendiente de verificar valores)***
-> $$
-> \tau_e = \frac{L}{R} = \frac{0{,}0711\cdot10^{-3}}{10{,}3} \approx 7\ \mu\text{s}
-> \qquad\ll\qquad
-> \tau_m \approx 36\ \text{ms}
-> $$
+
+$$
+\tau_e = \frac{L}{R} = \frac{0{,}0711\cdot10^{-3}}{10{,}3} \approx 7\ \mu\text{s}
+\qquad\ll\qquad
+\tau_m \approx 36\ \text{ms}
+$$
 
 Se supone que la corriente alcanza su valor de equilibrio de forma instantánea, $L\,di/dt \approx 0$:
 
