@@ -54,7 +54,7 @@ En la segunda fase, se añadirá el sensor (no se simula sino considera como ent
 
 ### Primera fase
 
-Primero, el driver. Como se ha mencionado no se cuenta como un componente que influye a la salida de motor. Sin embargo en esta fase se considera que se rota en un sentido, o sea `DRIVER_DIR_A_PIN = 1` y `DRIVER_OUT_B_PIN = 0`. Al ser que se simplifica que solo se rota en un sentido (Forward) por lo que la salidas de driver sera: *OUT_A = V_in V + 700 mA* (lo que envía Arduino) y *OUT_B = 0 V*. Corriente de salida: **700 mA** y Rango de tensiones: **0V - 5V**.
+Primero, el driver. Como se ha mencionado no se cuenta como un componente que influye a la salida de motor. Sin embargo en esta fase se considera que se rota en un sentido, o sea *DIR_A = 5V* y *DIR_B = 0V*. Al ser que se simplifica que solo se rota en un sentido (Forward) por lo que la salidas de driver sera: *OUT_A = V_in V + 700 mA* (lo que envía Arduino) y *OUT_B = 0 V*. Corriente de salida: **700 mA** y Rango de tensiones: **0V - 5V**.
 
 Ahora se queda la parte interesante es Motor DC con encoder.
 
