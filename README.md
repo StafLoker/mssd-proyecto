@@ -344,4 +344,4 @@ $$
 
 El comportamiento del pulsador manual con filtro de anti-rebote (debouncing) se define mediante la 7-tupla:
 
-M_"botón" =⟨X,Y,S,δ_"int" ,δ_"ext" ,λ,ta⟩
+$ M_"botón" =⟨X,Y,S,δ_"int" ,δ_"ext" ,λ,ta⟩ $
