@@ -412,6 +412,6 @@ Se dispara inmediatamente cuando ocurre un evento externo $x \in X$ habiendo tra
 En Reposos ante evento pulsar:
 
 $$
-$$\delta_{\text{ext}}(\text{REPOSO}, e, \text{pulsar}) = \text{FILTRO\_PRESIONAR}$$
+\delta_{\text{ext}}(\text{REPOSO}, e, \text{pulsar}) = \text{FILTRO\_PRESIONAR}
 $$
 
