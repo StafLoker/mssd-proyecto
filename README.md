@@ -404,6 +404,7 @@ $$
 
 Temporizador de anti-rebote al liberar
 
-##### Función de Transición Externa ($\delta_{\text{ext}}(s, e, x)$)
+
+##### Función de Transición Externa $$ ($\delta_{\text{ext}}(s, e, x)$) $$
 
 Se dispara inmediatamente cuando ocurre un evento externo $x \in X$ habiendo transcurrido un tiempo $e \le ta(s)$:
