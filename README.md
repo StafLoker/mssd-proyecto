@@ -377,5 +377,6 @@ $$
 Define la vida útil o tiempo de permanencia interna en cada estado $s \in S$:
 
 $$
-ta(\text{REPOSO}) = \infty, permanece indefinidamente a 0 voltaje hasta una pulsación.
+ta(\text{REPOSO}) = \infty 
 $$
+Permanece indefinidamente a 0 voltaje hasta una pulsación.
