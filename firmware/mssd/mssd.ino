@@ -14,17 +14,30 @@
 * - Power Supply Module
 */
 
+#include <DHT.h>
+
 // == Pins ==
 
 #define BUTTON_PIN 2
+
 #define SENSOR_PIN 3
+
 #define DRIVER_ENABLE_PIN 6  // PWM
 #define DRIVER_DIR_A_PIN 7
 #define DRIVER_DIR_B_PIN 8
 
-// == Fase 1 ==
-#define DRIVER_OUT_A_PIN A0
-#define DRIVER_OUT_B_PIN A1
+#define DRIVER_ENCODER_OUT_A 12
+#define DRIVER_ENCODER_OUT_B 13
+
+// == Other ==
+#define SENSOR_TYPE DHT11
+
+const float T_MIN = 20.0;
+const float T_MAX = 30.0;
+
+const float ENCODER_PPR = 20.0; // TODO: Sustituir por los pulsos por revolucion reales del encoder.
+const unsigned long SENSOR_CAPTURE_INTERVAL_MS = 2000;
+const unsigned long SPEED_CAPTURE_INTERVAL_MS = 1000;
 
 enum class RotationDirection {
   FORWARD,
@@ -92,24 +105,207 @@ public:
     }
     return 0;
   }
+
+  int swap_direction() {
+    if (direction_ == RotationDirection::FORWARD) {
+      change_direction(RotationDirection::INVERSE);
+    } else if (direction_ == RotationDirection::INVERSE) {
+      change_direction(RotationDirection::FORWARD);
+    } else {
+      return 1;
+    }
+    return 0;
+  }
 };
 
+// == Help functions ==
+
+int temperatureToPWM(float temperature) {
+  float output = (temperature - T_MIN)
+                 / (T_MAX - T_MIN) * 255.0;
+
+  return (int)constrain(output, 0, 255);
+}
+
+float pwmToVoltage(int pwm) {
+  return pwm * (5.0 / 255.0);
+}
+
+float rpmToAngularVelocity(float rpm) {
+  return rpm * (2.0 * PI / 60.0);
+}
+
+// == Global vars ==
+
+DHT sensor(SENSOR_PIN, SENSOR_TYPE);
 Motor motor(DRIVER_ENABLE_PIN, DRIVER_DIR_A_PIN, DRIVER_DIR_B_PIN);
 
-void setup() {
-  // Modelo
-  pinMode(BUTTON_PIN, INPUT); // No lo usamos en Fase 1
+volatile unsigned long encoderPulses = 0;
 
+unsigned long lastSensorTime = 0;
+unsigned long lastSpeedTime = 0;
+
+int lastButtonState = LOW;
+
+// == Interupciones ==
+
+void encoderISR() {
+  encoderPulses++;
+}
+
+
+void setup() {
+  Serial.begin(9600);
+
+  // Modelo
+  pinMode(BUTTON_PIN, INPUT);
+  pinMode(DRIVER_ENCODER_OUT_A, INPUT);
+  pinMode(DRIVER_ENCODER_OUT_B, INPUT);
+
+  sensor.begin();
   motor.init();
 
-  Serial.begin(9600);
+  attachInterrupt(
+    digitalPinToInterrupt(DRIVER_ENCODER_OUT_A),
+    encoderISR,
+    RISING);
 }
 
+// Fase 1
 void loop() {
-  Serial.print("Driver OUT A: ");
-  Serial.println((float) analogRead(DRIVER_OUT_A_PIN) * 0.00488); // 5.0 V / 1024.0 (ADC 10 bit precision -> 2^10 = 1024 codigos)
+  // == Run motor at maximum PWM ==
 
-  Serial.print("Driver OUT B: ")
-  Serial.println((float) analogRead(DRIVER_OUT_B_PIN) * 0.00488);
-  delay(50);
+  motor.change_speed(Motor::MAX_SPEED);
+
+  // == Measure angular velocity using encoder ==
+
+  unsigned long now = millis();
+
+  if (now - lastSpeedTime >= SPEED_CAPTURE_INTERVAL_MS) {
+    unsigned long elapsedMs = now - lastSpeedTime;
+    lastSpeedTime = now;
+
+    noInterrupts();
+    unsigned long pulses = encoderPulses;
+    encoderPulses = 0;
+    interrupts();
+
+    float elapsedSeconds = elapsedMs / 1000.0;
+
+    float rpm = 0.0;
+
+    if (ENCODER_PPR > 0.0) {
+      rpm = (pulses / ENCODER_PPR)
+            * (60.0 / elapsedSeconds);
+    }
+
+    float omega = rpmToAngularVelocity(rpm);
+
+    Serial.print("PWM: ");
+    Serial.println(Motor::MAX_SPEED);
+
+    Serial.print("Encoder pulses: ");
+    Serial.println(pulses);
+
+    Serial.print("Motor speed: ");
+    Serial.print(rpm, 2);
+    Serial.println(" RPM");
+
+    Serial.print("Angular velocity: ");
+    Serial.print(omega, 3);
+    Serial.println(" rad/s");
+
+    Serial.println();
+  }
 }
+
+/* Fase 2
+void loop() {
+  unsigned long now = millis();
+
+  // == Read temperature and control motor ==
+
+  if (now - lastSensorTime >= SENSOR_CAPTURE_INTERVAL_MS) {
+    lastSensorTime = now;
+
+    float temperature = sensor.readTemperature();
+
+    if (isnan(temperature)) {
+      Serial.println("Error leyendo el sensor DHT11");
+    } else {
+      int pwm = temperatureToPWM(temperature);
+      float voltage = pwmToVoltage(pwm);
+
+      motor.change_speed(pwm);
+
+      Serial.println("--- Motor control ---");
+
+      Serial.print("Temperature: ");
+      Serial.print(temperature, 1);
+      Serial.println(" C");
+
+      Serial.print("PWM: ");
+      Serial.print(pwm);
+      Serial.print(" / 255");
+
+      Serial.print(" | Voltage equivalent: ");
+      Serial.print(voltage, 2);
+      Serial.println(" V");
+    }
+  }
+
+  // == Toggle direction once per button press ==
+
+  int buttonState = digitalRead(BUTTON_PIN);
+
+  if (buttonState == HIGH && lastButtonState == LOW) {
+    motor.swap_direction();
+
+    Serial.print("Direction: ");
+    Serial.println(
+      motor.direction() == RotationDirection::FORWARD
+        ? "FORWARD"
+        : "INVERSE");
+  }
+
+  lastButtonState = buttonState;
+
+  // == Measure angular velocity using encoder ==
+
+  now = millis();
+
+  if (now - lastSpeedTime >= SPEED_CAPTURE_INTERVAL_MS) {
+    unsigned long elapsedMs = now - lastSpeedTime;
+    lastSpeedTime = now;
+
+    noInterrupts();
+    unsigned long pulses = encoderPulses;
+    encoderPulses = 0;
+    interrupts();
+
+    float elapsedSeconds = elapsedMs / 1000.0;
+
+    float rpm = 0.0;
+
+    if (ENCODER_PPR > 0.0) {
+      rpm = (pulses / ENCODER_PPR)
+            * (60.0 / elapsedSeconds);
+    }
+
+    float omega = rpmToAngularVelocity(rpm);
+
+    Serial.print("Encoder pulses: ");
+    Serial.println(pulses);
+
+    Serial.print("Motor speed: ");
+    Serial.print(rpm, 2);
+    Serial.println(" RPM");
+
+    Serial.print("Angular velocity: ");
+    Serial.print(omega, 3);
+    Serial.println(" rad/s");
+
+    Serial.println();
+  }
+}
+*/
