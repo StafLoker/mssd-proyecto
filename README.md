@@ -397,7 +397,7 @@ $$
 Permanece en 5 voltaje hasta que el usuario suelte el botón.
 
 $$
-$$ta(\text{FILTRO\_SOLTAR}) = T_db$$
+ta(\text{FILTRO\_SOLTAR}) = T_db
 $$
 
 Temporizador de anti-rebote al liberar.
