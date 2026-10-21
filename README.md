@@ -386,4 +386,4 @@ $$
 ta(\text{FILTRO\_PRESIONAR}) = T_{db}
 $$
 
-Temporizador de anti-rebote, típicamente $$ T_{db} = 20\text{ ms} $$.
+Temporizador de anti-rebote, típicamente  T_{db} = 20\text{ ms} .
