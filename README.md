@@ -369,5 +369,5 @@ $$
 Para modelar la física del contacto mecánico y el tiempo de filtrado de ruido por rebote (contact bounce), se definen 4 estados discretos: 
 
 $$
-S = \{\text{REPOSO}, \text{FILTRO\_PRESIONAR}, \text{PRESIONADO}, \text{FILTRO\_SOLTAR}\}
+$$S = \{\text{REPOSO}, \text{FILTRO\_PRESIONAR}, \text{PRESIONADO}, \text{FILTRO\_SOLTAR}\}$$
 $$
