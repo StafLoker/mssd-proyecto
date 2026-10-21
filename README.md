@@ -342,15 +342,6 @@ $$
 
 ##### Especificación Formal de la Tupla DEVS Botón de control manual
 
+El comportamiento del pulsador manual con filtro de anti-rebote (debouncing) se define mediante la 7-tupla:
 
-Formulación en la Tupla DESS (primer Orden)
-
-Formalmente, la tupla del modelo continuo de primer orden M=⟨U,X,Y,f,λ⟩ queda definida como:
-
-	Entrada (U):  u(t)=V_in (t)∈R (tensión aplicada por el driver L293D).
-	Estado (X):  x(t)=ω(t)∈R_(≥0) (único almacén de energía: la inercia del rotor J).
-	Salida (Y): y(t)=ω(t)∈R_(≥0)    (λ(u,x) = x) 
-	Función de Dinámica (f):
-  
-ω ̇(t)=f(u,x)=-1/τ_m  ω(t)+K_m/τ_m  V_in (t)=1/τ_m  (K_m V_in (t)-ω(t))
-
+M_"botón" =⟨X,Y,S,δ_"int" ,δ_"ext" ,λ,ta⟩
