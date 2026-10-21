@@ -18,16 +18,16 @@
 
 // == Pins ==
 
-#define BUTTON_PIN 2
+#define BUTTON_PIN 5
 
-#define SENSOR_PIN 3
+#define SENSOR_PIN 4
 
 #define DRIVER_ENABLE_PIN 6  // PWM
 #define DRIVER_DIR_A_PIN 7
 #define DRIVER_DIR_B_PIN 8
 
-#define DRIVER_ENCODER_OUT_A 12
-#define DRIVER_ENCODER_OUT_B 13
+#define DRIVER_ENCODER_OUT_A 2
+#define DRIVER_ENCODER_OUT_B 3
 
 // == Other ==
 #define SENSOR_TYPE DHT11
