@@ -384,7 +384,7 @@ Permanece indefinidamente a 0 voltaje hasta una pulsación.
 
 
 $$
-ta("FILTRO_PRESIONAR" )=T_db
+$$ta("Filtro_Presionar" )=T_db$$
 $$
 
 
