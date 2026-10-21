@@ -457,11 +457,11 @@ Dicta la evolución autónoma del estado tras cumplirse el tiempo de filtrado $t
 
 
 [Reposo]  ──(x = pulsar)──>  [Filtro_Presionar]  ──(expira T_db)──>  [Presioando]
-  (0 V)                         (temporizando)        λ = HIGH (5 V)    (5 V estable)
+  (0 V)                         (temporizando)        λ = High (5 V)    (5 V estable)
     ▲                                                                       │
     │                                                                       │
  (expira T_db) <── [Filtro_Soltar] <──────────(x = soltar)──────────────────┘
-  λ = LOW (0 V)     (temporizando)
+  λ = Low (0 v)     (temporizando)
 
 
 
