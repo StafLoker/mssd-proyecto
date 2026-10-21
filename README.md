@@ -337,3 +337,10 @@ $$
 | ----------------------- | ---------------------------------------------------------- |
 | $Ku\,(1-e^{-t/\tau_m})$ | Parte que sube desde 0 hasta $Ku$ por efecto de la tensión |
 | $x_0\,e^{-t/\tau_m}$    | Efecto de la velocidad inicial, que se va olvidando        |
+
+
+##### Especificación Formal de la Tupla DEVS Botón de control manual
+
+El comportamiento del pulsador manual con filtro de anti-rebote (debouncing) se define mediante la 7-tupla:$$M_{\text{botón}} = \langle X, Y, S, \delta_{\text{int}}, \delta_{\text{ext}}, \lambda, ta \rangle$$
+
+$$M_{\text{botón}} = \langle X, Y, S, \delta_{\text{int}}, \delta_{\text{ext}}, \lambda, ta \rangle$$
