@@ -430,8 +430,7 @@ En PRESIONADO ante evento soltar:
 En estados de filtro (Filtro_Presionar / Filtro_Soltar): Las fluctuaciones mecánicas secundarias durante el intervalo $e < T_{db}$ son ignoradas.
 
 
-##### Función de Salida ($\lambda(s)$)
-
+##### Función de Salisa (λ(s))  
 
 Emite el evento de salida hacia el Arduino únicamente al expirar el tiempo interno $e = ta(s)$:
 
@@ -441,7 +440,7 @@ Emite el evento de salida hacia el Arduino únicamente al expirar el tiempo inte
 λ("Filtro_Soltar" )="Low " (0" v" )
 
 
-##### Función de Transición Interna ($\delta_{\text{int}}(s)$)
+##### Función de Transición Interna (δ_"int" (s))
 
 
 Dicta la evolución autónoma del estado tras cumplirse el tiempo de filtrado $ta(s)$:
