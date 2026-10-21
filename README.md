@@ -349,7 +349,9 @@ M_{\text{botón}} = \langle X, Y, S, \delta_{\text{int}}, \delta_{\text{ext}}, \
 $$
 
 ##### Espacio de Eventos de Entrada ($X$)
+
 Eventos físicos asíncronos generados por la interacción del usuario: 
+
 $$
 X = \{\text{pulsar}, \text{soltar}\}
 $$
