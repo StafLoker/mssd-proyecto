@@ -377,7 +377,7 @@ $$
 Define la vida útil o tiempo de permanencia interna en cada estado $s \in S$:
 
 $$
-ta(\text{REPOSO}) = \infty 
+ta(\text{Reposo}) = \infty 
 $$
 
 Permanece indefinidamente a 0 voltaje hasta una pulsación.
@@ -391,7 +391,7 @@ $$
 Temporizador de anti-rebote, típicamente  T_{db} = 20 ms .
 
 $$
-$$ta(Presionado) = \infty$$
+ta(\text{Presionado}) = \infty
 $$
 
 Permanece en 5 voltaje hasta que el usuario suelte el botón.
