@@ -391,7 +391,7 @@ $$
 Temporizador de anti-rebote, típicamente  T_{db} = 20 ms .
 
 $$
-$$ta(\text{PRESIONADO}) = \infty$$
+$$ta(Presionado) = \infty$$
 $$
 
 Permanece en 5 voltaje hasta que el usuario suelte el botón.
