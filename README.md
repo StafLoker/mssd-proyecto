@@ -451,14 +451,16 @@ Dicta la evolución autónoma del estado tras cumplirse el tiempo de filtrado $t
 δ_"int"  ("Filtro_Soltar" )="Reposo" 
 
 
+
 ##### Diagrama de Transición de Estados
 
 
-[REPOSO]  ──(x = pulsar)──>  [FILTRO_PRESIONAR]  ──(expira T_db)──>  [PRESIONADO]
+
+[Reposo]  ──(x = pulsar)──>  [Filtro_Presionar]  ──(expira T_db)──>  [Presioando]
   (0 V)                         (temporizando)        λ = HIGH (5 V)    (5 V estable)
     ▲                                                                       │
     │                                                                       │
- (expira T_db) <── [FILTRO_SOLTAR] <──────────(x = soltar)──────────────────┘
+ (expira T_db) <── [Filtro_Soltar] <──────────(x = soltar)──────────────────┘
   λ = LOW (0 V)     (temporizando)
 
 
