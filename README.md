@@ -353,5 +353,5 @@ $$
 Eventos físicos asíncronos generados por la interacción del usuario: 
 
 $$
-X = \{\text{pulsar}, \text{soltar}\}
+$X$ = \{\text{pulsar}, \text{soltar}\}
 $$
