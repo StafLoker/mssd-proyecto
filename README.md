@@ -384,7 +384,7 @@ Permanece indefinidamente a 0 voltaje hasta una pulsación.
 
 
 $$
-$$ta("Filtro_Presionar" )=T_db$$
+ta("Filtro_Presionar" )=T_db
 $$
 
 
@@ -398,7 +398,7 @@ Permanece en 5 voltaje hasta que el usuario suelte el botón.
 
 
 $$
-$$ta("Filtro_Soltar" )=T_db$$
+ta("Filtro_Soltar" )=T_db
 $$
 
 
