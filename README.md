@@ -385,5 +385,4 @@ Permanece indefinidamente a 0 voltaje hasta una pulsación.
 $$
 ta(\text{FILTRO\_PRESIONAR}) = T_{db}
 $$
-
 Temporizador de anti-rebote, típicamente  T_{db} = 20\text{ ms} .
