@@ -341,6 +341,63 @@ $$
 
 ##### Especificación Formal de la Tupla DEVS Botón de control manual
 
-El comportamiento del pulsador manual con filtro de anti-rebote (debouncing) se define mediante la 7-tupla:$$M_{\text{botón}} = \langle X, Y, S, \delta_{\text{int}}, \delta_{\text{ext}}, \lambda, ta \rangle$$
+El comportamiento del pulsador manual con filtro de anti-rebote (debouncing) se define mediante la 7-tupla:
 
-$$M_{\text{botón}} = \langle X, Y, S, \delta_{\text{int}}, \delta_{\text{ext}}, \lambda, ta \rangle$$
+$$M_{\text{botón}} = \langle X, Y, S, \delta_{\text{interno}}, \delta_{\text{exterior}}, \lambda, ta \rangle$$
+
+##### Espacio de Eventos de Entrada ($X$)
+Eventos físicos asíncronos generados por la interacción del usuario: $$X = \{\text{pulsar}, \text{soltar}\}$$
+
+##### Espacio de Eventos de Salida ($Y$)
+Niveles de tensión lógica entregados al pin de entrada digital del Arduino. Gracias a la resistencia pull-down de $10\text{ k}\Omega$, el valor predeterminado sin pulsación es estrictamente $0\text{ V}$ (evitando el estado flotante): 
+
+$$Y = \{\text{LOW } (0\text{ V}), \text{ HIGH } (5\text{ V})\}$$
+
+##### Espacio de Estados Secuenciales ($S$)
+
+$$S = \{\text{REPOSO}, \text{FILTRO\_PRESIONAR}, \text{PRESIONADO}, \text{FILTRO\_SOLTAR}\}$$
+ 
+##### Función de Avance de Tiempo ($ta(s)$)
+
+Define la vida útil o tiempo de permanencia interna en cada estado $s \in S$:
+
+$ta(\text{REPOSO}) = \infty$ (Permanece indefinidamente a $0\text{ V}$ hasta una pulsación).
+
+$ta(\text{FILTRO\_PRESIONAR}) = T_{db}$ (Temporizador de anti-rebote, típicamente $T_{db} = 20\text{ ms}$).
+
+$ta(\text{PRESIONADO}) = \infty$ (Permanece en $5\text{ V}$ hasta que el usuario suelte el botón).
+
+$ta(\text{FILTRO\_SOLTAR}) = T_{db}$ (Temporizador de anti-rebote al liberar).
+
+##### Función de Transición Externa ($\delta_{\text{ext}}(s, e, x)$)
+
+Se dispara inmediatamente cuando ocurre un evento externo $x \in X$ habiendo transcurrido un tiempo $e \le ta(s)$:
+
+En REPOSO ante evento pulsar: $$\delta_{\text{ext}}(\text{REPOSO}, e, \text{pulsar}) = \text{FILTRO\_PRESIONAR}$$
+
+En PRESIONADO ante evento soltar: $$\delta_{\text{ext}}(\text{PRESIONADO}, e, \text{soltar}) = \text{FILTRO\_SOLTAR}$$
+
+En estados de filtro (FILTRO_PRESIONAR / FILTRO_SOLTAR): Las fluctuaciones mecánicas secundarias durante el intervalo $e < T_{db}$ son ignoradas.
+
+##### Función de Salida ($\lambda(s)$)
+
+Emite el evento de salida hacia el Arduino únicamente al expirar el tiempo interno $e = ta(s)$:
+
+$\lambda(\text{FILTRO\_PRESIONAR}) = \text{HIGH } (5\text{ V})$
+
+$\lambda(\text{FILTRO\_SOLTAR}) = \text{LOW } (0\text{ V})$
+
+##### Función de Transición Interna ($\delta_{\text{int}}(s)$)
+
+$\delta_{\text{int}}(\text{FILTRO\_PRESIONAR}) = \text{PRESIONADO}$
+
+$\delta_{\text{int}}(\text{FILTRO\_SOLTAR}) = \text{REPOSO}$
+
+##### Diagrama de Transición de Estados
+
+[REPOSO]  ──(x = pulsar)──>  [FILTRO_PRESIONAR]  ──(expira T_db)──>  [PRESIONADO]
+  (0 V)                         (temporizando)        λ = HIGH (5 V)    (5 V estable)
+    ▲                                                                       │
+    │                                                                       │
+ (expira T_db) <── [FILTRO_SOLTAR] <──────────(x = soltar)──────────────────┘
+  λ = LOW (0 V)     (temporizando)
