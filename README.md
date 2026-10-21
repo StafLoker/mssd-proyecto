@@ -384,7 +384,7 @@ Permanece indefinidamente a 0 voltaje hasta una pulsación.
 
 
 $$
-ta(\text{FILTRO\_PRESIONAR}) = T_{db}
+$$ta(\text{FILTRO\_PRESIONAR}) = T_{db}$$
 $$
 
 
