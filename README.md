@@ -406,10 +406,12 @@ Temporizador de anti-rebote al liberar
 
 
 
+
 ##### Función de Transición Externa (δ_"ext"  (s,e,x)) 
 
 
 Se dispara inmediatamente cuando ocurre un evento externo $x \in X$ habiendo transcurrido un tiempo $e \le ta(s)$:
+
 
 En Reposos ante evento pulsar:
 
@@ -417,4 +419,52 @@ En Reposos ante evento pulsar:
 $$
 δ_"ext"  ("Reposo" ,e,"pulsar" )="Filtro Presionar" 
 $$
+
+
+En PRESIONADO ante evento soltar: 
+
+δ_"ext"  ("Presionado" ,e,"soltar" )="Filtro_Soltar"
+
+
+
+En estados de filtro (Filtro_Presionar / Filtro_Soltar): Las fluctuaciones mecánicas secundarias durante el intervalo $e < T_{db}$ son ignoradas.
+
+
+##### Función de Salida ($\lambda(s)$)
+
+
+Emite el evento de salida hacia el Arduino únicamente al expirar el tiempo interno $e = ta(s)$:
+
+
+λ("Filtro_Presionar" )="High" (5" V" )  
+
+λ("Filtro_Soltar" )="Low " (0" v" )
+
+
+##### Función de Transición Interna ($\delta_{\text{int}}(s)$)
+
+
+Dicta la evolución autónoma del estado tras cumplirse el tiempo de filtrado $ta(s)$:
+  
+
+δ_"int"  ("Filtro_Presionar" )="Presionado" 
+
+δ_"int"  ("Filtro_Soltar" )="Reposo" 
+
+
+##### Diagrama de Transición de Estados
+
+
+[REPOSO]  ──(x = pulsar)──>  [FILTRO_PRESIONAR]  ──(expira T_db)──>  [PRESIONADO]
+  (0 V)                         (temporizando)        λ = HIGH (5 V)    (5 V estable)
+    ▲                                                                       │
+    │                                                                       │
+ (expira T_db) <── [FILTRO_SOLTAR] <──────────(x = soltar)──────────────────┘
+  λ = LOW (0 V)     (temporizando)
+
+
+
+
+
+
 
