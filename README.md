@@ -337,3 +337,37 @@ $$
 | ----------------------- | ---------------------------------------------------------- |
 | $Ku\,(1-e^{-t/\tau_m})$ | Parte que sube desde 0 hasta $Ku$ por efecto de la tensión |
 | $x_0\,e^{-t/\tau_m}$    | Efecto de la velocidad inicial, que se va olvidando        |
+
+
+
+##### Especificación Formal de la Tupla DEVS Botón de control manual
+
+El comportamiento del pulsador manual con filtro de anti-rebote (debouncing) se define mediante la 7-tupla:
+
+$$
+M_{\text{botón}} = \langle X, Y, S, \delta_{\text{int}}, \delta_{\text{ext}}, \lambda, ta \rangle
+$$
+
+##### Espacio de Eventos de Entrada ($X$)
+
+Eventos físicos asíncronos generados por la interacción del usuario: 
+
+$$
+X = \{\text{pulsar}, \text{soltar}\}
+$$
+
+##### Espacio de Eventos de Salida ($Y$)
+
+Niveles de tensión lógica entregados al pin de entrada digital del Arduino. Gracias a la resistencia pull-down de $10\text{ k}\Omega$, el valor predeterminado sin pulsación es estrictamente $0\text{ V}$ (evitando el estado flotante): 
+
+$$
+Y = \{\text{LOW } (0\text{ V}), \text{ HIGH } (5\text{ V})\}
+$$
+
+##### Espacio de Estados Secuenciales ($S$)
+
+Para modelar la física del contacto mecánico y el tiempo de filtrado de ruido por rebote (contact bounce), se definen 4 estados discretos: 
+
+$$
+S = \{\text{REPOSO}, \text{FILTRO\_PRESIONAR}, \text{PRESIONADO}, \text{FILTRO\_SOLTAR}\}
+$$
