@@ -347,3 +347,9 @@ El comportamiento del pulsador manual con filtro de anti-rebote (debouncing) se 
 $$
 M_{\text{botón}} = \langle X, Y, S, \delta_{\text{int}}, \delta_{\text{ext}}, \lambda, ta \rangle
 $$
+
+##### Espacio de Eventos de Entrada ($X$)
+Eventos físicos asíncronos generados por la interacción del usuario: 
+$$
+X = \{\text{pulsar}, \text{soltar}\}
+$$
