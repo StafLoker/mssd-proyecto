@@ -340,7 +340,7 @@ $$
 
 
 
-##### Especificación Formal de la Tupla DEVS Botón de control manual
+#### **Especificación Formal de la Tupla DEVS Botón de control manual**
 
 El comportamiento del pulsador manual con filtro de anti-rebote (debouncing) se define mediante la 7-tupla:
 
@@ -348,31 +348,31 @@ $$
 M_{\text{botón}} = \langle X, Y, S, \delta_{\text{int}}, \delta_{\text{ext}}, \lambda, ta \rangle
 $$
 
-##### Espacio de Eventos de Entrada ($X$)
+#### **Espacio de Eventos de Entrada ($X$)**
 
 Eventos físicos asíncronos generados por la interacción del usuario: 
 
 $$
-X = \{\text{pulsar}, \text{soltar}\}
+X = \{\text{Pulsar}, \text{Soltar}\}
 $$
 
-##### Espacio de Eventos de Salida ($Y$)
+#### **Espacio de Eventos de Salida ($Y$)**
 
-Niveles de tensión lógica entregados al pin de entrada digital del Arduino. Gracias a la resistencia pull-down de $10\text{ k}\Omega$, el valor predeterminado sin pulsación es estrictamente $0\text{ V}$ (evitando el estado flotante): 
-
-$$
-Y = \{\text{LOW } (0\text{ V}), \text{ HIGH } (5\text{ V})\}
-$$
-
-##### Espacio de Estados Secuenciales ($S$)
-
-Para modelar la física del contacto mecánico y el tiempo de filtrado de ruido por rebote (contact bounce), se definen 4 estados discretos: 
+Niveles de tensión lógica entregados al pin de entrada digital del Arduino. Gracias a la resistencia pull-down de $6\text{ k}\Omega$, el valor predeterminado sin pulsación es estrictamente $0\text{ V}$ (evitando el estado flotante): 
 
 $$
-S={"Reposo" ,"Filtro_Presionar" ,"Presionado" ,"Filtro_Soltar"}
+Y = \{\text{Low } (0\text{ V}), \text{ High }(5\text{ V})\}
 $$
 
-##### Función de Avance de Tiempo ($ta(s)$)
+#### **Espacio de Estados Secuenciales ($S$)**
+
+Para modelar la física del contacto mecánico se definen 2 estados discretos: 
+
+$$
+S = \{\text{Reposo}, \text{Presionado}\}
+$$
+
+#### **Función de Avance de Tiempo ($ta(s)$)**
 
 Define la vida útil o tiempo de permanencia interna en cada estado $s \in S$:
 
@@ -382,14 +382,6 @@ $$
 
 Permanece indefinidamente a 0 voltaje hasta una pulsación.
 
-
-$$
-ta("Filtro_Presionar" )=T_db
-$$
-
-
-Temporizador de anti-rebote, típicamente  T_{db} = 20 ms .
-
 $$
 ta(\text{Presionado}) = \infty
 $$
@@ -397,74 +389,50 @@ $$
 Permanece en 5 voltaje hasta que el usuario suelte el botón.
 
 
-$$
-ta("Filtro_Soltar" )=T_db
-$$
-
-
-Temporizador de anti-rebote al liberar
-
-
-
-
-##### Función de Transición Externa (δ_"ext"  (s,e,x)) 
+#### **Función de Transición Externa  (δ_"ext"  (s,e,x))** 
 
 
 Se dispara inmediatamente cuando ocurre un evento externo $x \in X$ habiendo transcurrido un tiempo $e \le ta(s)$:
 
-
-En Reposos ante evento pulsar:
-
-
-$$
-δ_"ext"  ("Reposo" ,e,"pulsar" )="Filtro Presionar" 
-$$
-
-
-En PRESIONADO ante evento soltar: 
-
-δ_"ext"  ("Presionado" ,e,"soltar" )="Filtro_Soltar"
+$$\delta_{\text{ext}}((\text{Reposo}, e), \text{Pulsar}) = \text{Presionado}$$
+$$\delta_{\text{ext}}((\text{Presionado}, e), \text{Soltar}) = \text{Reposo}$$
 
 
 
-En estados de filtro (Filtro_Presionar / Filtro_Soltar): Las fluctuaciones mecánicas secundarias durante el intervalo $e < T_{db}$ son ignoradas.
+#### **Función de Salida (λ(s))**  
 
 
-##### Función de Salisa (λ(s))  
-
-Emite el evento de salida hacia el Arduino únicamente al expirar el tiempo interno $e = ta(s)$:
+$$\lambda(\text{Reposo}) = \text{Low}, \qquad \lambda(\text{Presionado}) = \text{High}$$
 
 
-λ("Filtro_Presionar" )="High" (5" V" )  
+#### Función de Transición Interna (δ_"int" (s))
 
-λ("Filtro_Soltar" )="Low " (0" v" )
-
-
-##### Función de Transición Interna (δ_"int" (s))
-
-
-Dicta la evolución autónoma del estado tras cumplirse el tiempo de filtrado $ta(s)$:
-  
-
-δ_"int"  ("Filtro_Presionar" )="Presionado" 
-
-δ_"int"  ("Filtro_Soltar" )="Reposo" 
+$$\delta_{\text{int}}(s) = s \quad \forall s \in S$$
 
 
 
-##### Diagrama de Transición de Estados
 
 
+#### **Diagrama de Transición de Estados**
+```
+                         x = pulsar
+              ┌─────────────────────────────────┐
+              │                                 ▼
+        ┌───────────┐                    ┌───────────────┐
+ s0 ──► │  Reposo  │                     │  Presionado   │
+        │ ta = ∞    │                    │ ta = ∞        │
+        │ λ = Low   │                    │ λ = High      │
+        │ (0 V)     │                    │ (5 V estable) │
+        └───────────┘                    └───────────────┘
+              ▲                                 │
+              └─────────────────────────────────┘
+                         x = soltar
 
-[Reposo]  ──(x = pulsar)──>  [Filtro_Presionar]  ──(expira T_db)──>  [Presioando]
-  (0 V)                         (temporizando)        λ = High (5 V)    (5 V estable)
-    ▲                                                                       │
-    │                                                                       │
- (expira T_db) <── [Filtro_Soltar] <──────────(x = soltar)──────────────────┘
-  λ = Low (0 v)     (temporizando)
+  Autotransiciones (eventos espurios, se ignoran):
+    Reposo      ── x = soltar ──► Reposo
+    Presionado  ── x = pulsar ──► Presionado
 
-
-
+```
 
 
 
