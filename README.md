@@ -10,6 +10,7 @@ Participantes:
 - Stefan Oshchypok
 - Anthony Manzueta Difo
 
+
 ## Sistema físico plateado  
 
 Description: Sistema de control de clima.
@@ -33,6 +34,13 @@ Entradas del sistema:
 Salidas del sistema:
 - Velocidad (w(t)) de motor
 
+### Fotos de cto implementado
+
+**TODO: CAMBIAR**
+
+<img src="assets/MSSD-layout.png" width="400" />
+
+
 ## Modelización y simulation
 
 ### Limitaciones
@@ -51,6 +59,8 @@ Sera en dos fases. En la primera se resuelve la modelización y simulacion + com
 - Motor DC con encoder
 
 En la segunda fase, se añadirá el sensor (no se simula sino considera como entrada *u(t)*) y boton.
+
+---
 
 ### Primera fase
 
@@ -180,7 +190,7 @@ $$
 
 Con los valores de la tabla: $\tau_m \approx 0{,}075$ s y $K \approx 52{,}9$ (rad/s)/V.
 
-##### Formulación en la tupla DESS (primer orden)
+##### Tupla DESS (primer orden)
 
 La tupla del modelo continuo, $M = \langle U, X, Y, f, \lambda \rangle$, queda definida como:
 
@@ -373,6 +383,16 @@ $$
 | $Ku\ (1-e^{-t/\tau_m})$ | Parte que sube desde 0 hasta $Ku$ por efecto de la tensión |
 | $x_0\ e^{-t/\tau_m}$    | Efecto de la velocidad inicial, que se va olvidando        |
 
+
+#### Resultados
+
+<img src="assets/resultados_fase_1.png" width="800" />
+
+---
+
+### Segunda fase
+
+Aqui vamos a simular el boton.
 
 #### Boton
 
