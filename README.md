@@ -322,11 +322,11 @@ $$
 
 **Valores para el motor** ($\tau_m \approx 0{,}075$ s):
 
-| Criterio                                         | Condición           | Límite de $T_s$     |
-| ------------------------------------------------ | ------------------- | ------------------- |
-| Estabilidad                                      | $T_s < 2\tau_m$     | $\approx 150$ ms |
-| Sin oscilaciones                                 | $T_s \le \tau_m$    | $\approx 75$ ms |
-| Buena precisión (8 - 12 muestras por cada $T_s$) | $T_s \le \tau_m/10$ | $\approx 7{,}5$ ms  |
+| Criterio                                         | Condición           | Límite de $T_s$    |
+| ------------------------------------------------ | ------------------- | ------------------ |
+| Estabilidad                                      | $T_s < 2\tau_m$     | $\approx 150$ ms   |
+| Sin oscilaciones                                 | $T_s \le \tau_m$    | $\approx 75$ ms    |
+| Buena precisión (8 - 12 muestras por cada $T_s$) | $T_s \le \tau_m/10$ | $\approx 7{,}5$ ms |
 
 ###### Régimen permanente y solución exacta del DESS
 
