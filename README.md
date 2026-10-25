@@ -60,15 +60,50 @@ Ahora se queda la parte interesante es Motor DC con encoder.
 
 #### Motor DC
 
-##### Parámetros físicos ***(pendiente de verificar valores)***
+##### Parámetros físicos
+
+Motor: [Pololu 25D metal gearmotors](https://www.pololu.com/category/115/25d-metal-gearmotors).
+
+**Medidas directas** (motor en vacío, alimentado con tensión constante). $V_c$, $i_{arr}$ e $i_{stall}$ se midieron pero no se usan en ningún cálculo posterior:
+
+| Medida                                        | Símbolo       | Valor   | Unidad |
+| --------------------------------------------- | ------------- | ------- | ------ |
+| Resistencia de armadura                       | $R$           | 6       | Ω      |
+| Tensión aplicada en el ensayo                 | $V_{ab}$      | 4,93    | V      |
+| Corriente en régimen permanente (sin carga)   | $i_0$         | 0,5     | mA     |
+| Velocidad angular en régimen permanente       | $\omega_{ss}$ | 260,752 | rad/s  |
+| Tiempo en alcanzar el 63,2 % de $\omega_{ss}$ | $\tau_{real}$ | 0,075   | s      |
+| Tensión en circuito cerrado (con carga)       | $V_c$         | 3,53    | V      |
+| Corriente de arranque                         | $i_{arr}$     | 0,1     | mA     |
+| Corriente de bloqueo (*stall*)                | $i_{stall}$   | 0,5     | A      |
+
+**Cálculo de cada parámetro:**
+
+$$
+K_e = \frac{V_{ab} - R\ i_0}{\omega_{ss}}
+$$
+
+$$
+K_t = K_e
+$$
+
+$$
+b = \frac{K_t\ i_0}{\omega_{ss}}
+$$
+
+$$
+J = \frac{\tau_{real}\ K_e\ K_t}{R}
+$$
+
+**Resultados:**
 
 | Parámetro                               | Símbolo | Valor      | Unidad    |
 | --------------------------------------- | ------- | ---------- | --------- |
-| Momento de inercia                      | $J$     | 4,0771E-08 | kg·m²     |
-| Coeficiente de fricción viscosa         | $b$     | 4,7047E-08 | N·m·s/rad |
-| Constante de fuerza contraelectromotriz | $K_e$   | 0,00335915 | V·s/rad   |
-| Constante de par del motor              | $K_t$   | 0,00335915 | N·m/A     |
-| Resistencia de armadura                 | $R$     | 10,3       | Ω         |
+| Momento de inercia                      | $J$     | 4,4629E-06 | kg·m²     |
+| Coeficiente de fricción viscosa         | $b$     | 3,6232E-08 | N·m·s/rad |
+| Constante de fuerza contraelectromotriz | $K_e$   | 0,0188953  | V·s/rad   |
+| Constante de par del motor              | $K_t$   | 0,0188953  | N·m/A     |
+| Resistencia de armadura                 | $R$     | 6          | Ω         |
 | Inductancia de armadura                 | $L$     | 0,0711     | mH        |
 
 En unidades del SI, $K_t = K_e$ (conservacion de la energía).
@@ -89,7 +124,7 @@ En unidades del SI, $K_t = K_e$ (conservacion de la energía).
 **Dominio mecánico** (segunda ley de Newton para rotación):
 
 $$
-J\dot\omega = \underbrace{K_t\, i}_{\text{par motor}} - \underbrace{b\,\omega}_{\text{fricción viscosa}} - \underbrace{\tau_d}_{\text{carga externa}}
+J\dot\omega = \underbrace{K_t\  i}_{\text{par motor}} - \underbrace{b\ \omega}_{\text{fricción viscosa}} - \underbrace{\tau_d}_{\text{carga externa}}
 $$
 
 No hay carga externa, por lo que $\tau_d = 0$.
@@ -113,7 +148,7 @@ $$
 \tau_m \approx 36\ \text{ms}
 $$
 
-Se supone que la corriente alcanza su valor de equilibrio de forma instantánea, $L\,di/dt \approx 0$:
+Se supone que la corriente alcanza su valor de equilibrio de forma instantánea, $L\ di/dt \approx 0$:
 
 $$
 i = \frac{v - K_e\omega}{R}
@@ -128,7 +163,7 @@ $$
 Se define $c \equiv b + K_tK_e/R$ y se divide toda la ecuación entre $c$:
 
 $$
-\tau_m\,\dot\omega + \omega = K\,v
+\tau_m\ \dot\omega + \omega = K\ v
 $$
 
 con
@@ -140,10 +175,10 @@ $$
 Despejando $\dot\omega$:
 
 $$
-\dot\omega = \frac{1}{\tau_m}\left(K\,v - \omega\right)
+\dot\omega = \frac{1}{\tau_m}\left(K\ v - \omega\right)
 $$
 
-Con los valores de la tabla: $\tau_m \approx 0{,}0357$ s y $K \approx 285$ (rad/s)/V. ***(pendiente de verificar valores)***
+Con los valores de la tabla: $\tau_m \approx 0{,}075$ s y $K \approx 52{,}9$ (rad/s)/V.
 
 ##### Formulación en la tupla DESS (primer orden)
 
@@ -155,15 +190,15 @@ La tupla del modelo continuo, $M = \langle U, X, Y, f, \lambda \rangle$, queda d
 - **Función de dinámica ($f$)**:
 
 $$
-\dot{\omega}(t) = f(u,x) = \frac{1}{\tau_m}\left( K\, v(t) - \omega(t) \right)
+\dot{\omega}(t) = f(u,x) = \frac{1}{\tau_m}\left( K\  v(t) - \omega(t) \right)
 $$
 
 **Significado de cada término**
 
 - $x(t) = \omega(t)$: variable de estado (velocidad angular del ventilador, en rad/s).
 - $u(t) = v(t)$: señal de entrada (tensión aplicada por el driver L293D, en V).
-- $\tau_m$: constante de tiempo mecánica equivalente, en s. Es el tiempo que tarda el ventilador en alcanzar el $63{,}2\,\%$ de su velocidad final ante un escalón de tensión. Incluye el efecto de la fricción viscosa y el de la fuerza contraelectromotriz.
-- $K$: ganancia estática del motor, en (rad/s)/V. En régimen permanente ($\dot\omega=0$) se cumple $\omega_{ss} = K\,v$, es decir, los rad/s que se ganan por cada voltio aplicado.
+- $\tau_m$: constante de tiempo mecánica equivalente, en s. Es el tiempo que tarda el ventilador en alcanzar el $63{,}2\ \%$ de su velocidad final ante un escalón de tensión. Incluye el efecto de la fricción viscosa y el de la fuerza contraelectromotriz.
+- $K$: ganancia estática del motor, en (rad/s)/V. En régimen permanente ($\dot\omega=0$) se cumple $\omega_{ss} = K\ v$, es decir, los rad/s que se ganan por cada voltio aplicado.
 
 ##### Tupla DTSS (primer orden)
 
@@ -176,7 +211,7 @@ $$
 Se parte de la ecuación diferencial del DESS:
 
 $$
-\dot\omega(t) = \frac{1}{\tau_m}\big(K\,v(t) - \omega(t)\big)
+\dot\omega(t) = \frac{1}{\tau_m}\big(K\ v(t) - \omega(t)\big)
 $$
 
 Se evalúa el sistema solo en instantes separados por un paso fijo $T_s$, es decir, $t_k = kT_s$, y se escribe $\omega(k) \equiv \omega(kT_s)$.
@@ -210,7 +245,7 @@ $$
 Se agrupan los términos en $\omega(k)$ y en $v(k)$:
 
 $$
-\boxed{\omega(k+1) = \Big(1 - \frac{T_s}{\tau_m}\Big)\omega(k) + \frac{T_s\,K}{\tau_m} v(k)}
+\boxed{\omega(k+1) = \Big(1 - \frac{T_s}{\tau_m}\Big)\omega(k) + \frac{T_s\ K}{\tau_m} v(k)}
 $$
 
 ###### Definición de elementos
@@ -239,20 +274,20 @@ Desglose y definiciones
 
 - $T_s$ $(\Delta t)$: período de muestreo, intervalo fijo (en s) entre dos actualizaciones del modelo.
 - $\tau_m$: constante de tiempo mecánica (s), definida en el DESS.
-- $K$: ganancia estática del motor, en (rad/s)/V, definida en el DESS. En régimen permanente $\omega_{ss}=K\,v$, también en el modelo discreto.
+- $K$: ganancia estática del motor, en (rad/s)/V, definida en el DESS. En régimen permanente $\omega_{ss}=K\ v$, también en el modelo discreto.
 
 ###### Condición de estabilidad numérica
 
 La estabilidad de un sistema discreto lineal se estudia con su dinámica libre ($v(k)=0$). La ecuación de transición es
 
 $$
-\omega(k+1) = a\,\omega(k) + \frac{T_s K}{\tau_m}\,v(k), \qquad a = 1-\frac{T_s}{\tau_m}
+\omega(k+1) = a\ \omega(k) + \frac{T_s K}{\tau_m}\ v(k), \qquad a = 1-\frac{T_s}{\tau_m}
 $$
 
 Con un solo estado, el autovalor del sistema es el propio coeficiente $a$. Con $v(k)=0$:
 
 $$
-\omega(k+1) = a\,\omega(k) \Rightarrow\ \omega(k) = a^k\,\omega(0)
+\omega(k+1) = a\ \omega(k) \Rightarrow\ \omega(k) = a^k\ \omega(0)
 $$
 
 Por tanto $\omega(k)\to0$ si y solo si $|a|<1$ (autovalor dentro del círculo unidad):
@@ -266,7 +301,7 @@ $$
 $$
 
 $$
-\boxed{T_s < 2\,\tau_m}
+\boxed{T_s < 2\ \tau_m}
 $$
 
 **Ausencia de oscilaciones numéricas.** Si $-1<a<0$, el sistema es estable pero $\omega(k)=a^k\omega(0)$ cambia de signo en cada paso. El sistema continuo, de primer orden, no oscila nunca, luego esa oscilación es un artefacto del método. Para evitarla se exige $a\ge0$:
@@ -275,72 +310,73 @@ $$
 1-\frac{T_s}{\tau_m}\ge0 \Longrightarrow\ T_s\le\tau_m
 $$
 
-**Valores para el motor** ($\tau_m \approx 0{,}0357$ s) ***(pendiente de verificar valores)***:
+**Valores para el motor** ($\tau_m \approx 0{,}075$ s):
 
 | Criterio                                         | Condición           | Límite de $T_s$     |
 | ------------------------------------------------ | ------------------- | ------------------- |
-| Estabilidad                                      | $T_s < 2\tau_m$     | $\approx 71{,}4$ ms |
-| Sin oscilaciones                                 | $T_s \le \tau_m$    | $\approx 35{,}7$ ms |
-| Buena precisión (8 - 12 muestras por cada $T_s$) | $T_s \le \tau_m/10$ | $\approx 3{,}6$ ms  |
+| Estabilidad                                      | $T_s < 2\tau_m$     | $\approx 150$ ms |
+| Sin oscilaciones                                 | $T_s \le \tau_m$    | $\approx 75$ ms |
+| Buena precisión (8 - 12 muestras por cada $T_s$) | $T_s \le \tau_m/10$ | $\approx 7{,}5$ ms  |
 
 ###### Régimen permanente y solución exacta del DESS
 
 Se considera una entrada constante $v(t)=u$ siendo $u=5V$ y una condición inicial $\omega(0)=x_0$. La ecuación del DESS es
 
 $$
-\tau_m\,\dot\omega + \omega = K\,u, \qquad \omega(0)=x_0
+\tau_m\ \dot\omega + \omega = K\ u, \qquad \omega(0)=x_0
 $$
 
 **Régimen permanente.** Es el valor al que tiende $\omega$ cuando deja de cambiar, es decir, $\dot\omega=0$:
 
 $$
-\tau_m\cdot 0 + \omega_{ss} = K\,u
-\;\;\Longrightarrow\;\;
-\boxed{\omega_{ss} = K\,u}
+\tau_m\cdot 0 + \omega_{ss} = K\ u
+\ \Longrightarrow\ 
+\boxed{\omega_{ss} = K\ u}
 $$
 
-Con los valores de la tabla, $\omega_{ss} = K u \approx 285 \cdot 5 \approx 1425$ rad/s. ***(pendiente de verificar valores)***
+Con los valores de la tabla, $\omega_{ss} = K u \approx 52{,}9 \cdot 5 \approx 264$ rad/s.
 
 **Solución exacta.** Se define el error respecto al régimen permanente:
 
 $$
-e(t) = \omega(t) - K\,u
+e(t) = \omega(t) - K\ u
 $$
 
 Como $K u$ es constante, $\dot e = \dot\omega$. Sustituyendo $\omega = e + Ku$ en la EDO:
 
 $$
-\tau_m\,\dot e + e + Ku = Ku
-\;\;\Longrightarrow\;\;
-\dot e = -\frac{1}{\tau_m}\,e
+\tau_m\ \dot e + e + Ku = Ku
+\ \Longrightarrow\ 
+\dot e = -\frac{1}{\tau_m}\ e
 $$
 
 Es una EDO lineal homogénea de primer orden, cuya solución es una exponencial decreciente:
 
 $$
-e(t) = e(0)\,e^{-t/\tau_m}, \qquad e(0) = x_0 - Ku
+e(t) = e(0)\ e^{-t/\tau_m}, \qquad e(0) = x_0 - Ku
 $$
 
 Deshaciendo el cambio de variable, $\omega(t) = Ku + e(t)$:
 
 $$
-\omega(t) = Ku + (x_0 - Ku)\,e^{-t/\tau_m}
+\omega(t) = Ku + (x_0 - Ku)\ e^{-t/\tau_m}
 $$
 
 que, reordenada, queda
 
 $$
-\boxed{\omega(t) = K\,u\,\big(1 - e^{-t/\tau_m}\big) + x_0\,e^{-t/\tau_m}}
+\boxed{\omega(t) = K\ u\ \big(1 - e^{-t/\tau_m}\big) + x_0\ e^{-t/\tau_m}}
 $$
 
 | Término                 | Significado                                                |
 | ----------------------- | ---------------------------------------------------------- |
-| $Ku\,(1-e^{-t/\tau_m})$ | Parte que sube desde 0 hasta $Ku$ por efecto de la tensión |
-| $x_0\,e^{-t/\tau_m}$    | Efecto de la velocidad inicial, que se va olvidando        |
+| $Ku\ (1-e^{-t/\tau_m})$ | Parte que sube desde 0 hasta $Ku$ por efecto de la tensión |
+| $x_0\ e^{-t/\tau_m}$    | Efecto de la velocidad inicial, que se va olvidando        |
 
 
+#### Boton
 
-#### **Especificación Formal de la Tupla DEVS Botón de control manual**
+##### Tupla DEVS
 
 El comportamiento del pulsador manual con filtro de anti-rebote (debouncing) se define mediante la 7-tupla:
 
@@ -348,7 +384,7 @@ $$
 M_{\text{botón}} = \langle X, Y, S, \delta_{\text{int}}, \delta_{\text{ext}}, \lambda, ta \rangle
 $$
 
-#### **Espacio de Eventos de Entrada ($X$)**
+**Espacio de Eventos de Entrada ($X$)**
 
 Eventos físicos asíncronos generados por la interacción del usuario: 
 
@@ -356,7 +392,7 @@ $$
 X = \{\text{Pulsar}, \text{Soltar}\}
 $$
 
-#### **Espacio de Eventos de Salida ($Y$)**
+**Espacio de Eventos de Salida ($Y$)**
 
 Niveles de tensión lógica entregados al pin de entrada digital del Arduino. Gracias a la resistencia pull-down de $6\text{ k}\Omega$, el valor predeterminado sin pulsación es estrictamente $0\text{ V}$ (evitando el estado flotante): 
 
@@ -364,7 +400,7 @@ $$
 Y = \{\text{Low } (0\text{ V}), \text{ High }(5\text{ V})\}
 $$
 
-#### **Espacio de Estados Secuenciales ($S$)**
+**Espacio de Estados Secuenciales ($S$)**
 
 Para modelar la física del contacto mecánico se definen 2 estados discretos: 
 
@@ -372,7 +408,7 @@ $$
 S = \{\text{Reposo}, \text{Presionado}\}
 $$
 
-#### **Función de Avance de Tiempo ($ta(s)$)**
+**Función de Avance de Tiempo ($ta(s)$)**
 
 Define la vida útil o tiempo de permanencia interna en cada estado $s \in S$:
 
@@ -389,7 +425,7 @@ $$
 Permanece en 5 voltaje hasta que el usuario suelte el botón.
 
 
-#### **Función de Transición Externa  (δ_"ext"  (s,e,x))** 
+**Función de Transición Externa  (δ_"ext"  (s,e,x))** 
 
 
 Se dispara inmediatamente cuando ocurre un evento externo $x \in X$ habiendo transcurrido un tiempo $e \le ta(s)$:
@@ -398,40 +434,31 @@ $$\delta_{\text{ext}}((\text{Reposo}, e), \text{Pulsar}) = \text{Presionado}$$
 $$\delta_{\text{ext}}((\text{Presionado}, e), \text{Soltar}) = \text{Reposo}$$
 
 
-
-#### **Función de Salida (λ(s))**  
+**Función de Salida (λ(s))**  
 
 
 $$\lambda(\text{Reposo}) = \text{Low}, \qquad \lambda(\text{Presionado}) = \text{High}$$
 
 
-#### Función de Transición Interna (δ_"int" (s))
+Función de Transición Interna (δ_"int" (s))
 
 $$\delta_{\text{int}}(s) = s \quad \forall s \in S$$
 
 
+**Diagrama de Transición de Estados**
 
-
-
-#### **Diagrama de Transición de Estados**
-```
-                         x = pulsar
-              ┌─────────────────────────────────┐
-              │                                 ▼
-        ┌───────────┐                    ┌───────────────┐
- s0 ──► │  Reposo  │                     │  Presionado   │
-        │ ta = ∞    │                    │ ta = ∞        │
-        │ λ = Low   │                    │ λ = High      │
-        │ (0 V)     │                    │ (5 V estable) │
-        └───────────┘                    └───────────────┘
-              ▲                                 │
-              └─────────────────────────────────┘
-                         x = soltar
-
-  Autotransiciones (eventos espurios, se ignoran):
-    Reposo      ── x = soltar ──► Reposo
-    Presionado  ── x = pulsar ──► Presionado
-
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> Reposo : s0
+    Reposo : Reposo
+    Reposo : ta = ∞
+    Reposo : λ = Low (0 V)
+    Presionado : Presionado
+    Presionado : ta = ∞
+    Presionado : λ = High (5 V estable)
+    Reposo --> Presionado : x = pulsar
+    Presionado --> Reposo : x = soltar
 ```
 
 

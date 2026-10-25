@@ -1,15 +1,29 @@
-%% Constantes de medidas
+%% Medidas de motor medidas
 
-ENCODER_PPR = 24;              % Pulsos por vuelta (CHANGE en canal A)
+encoder_ppr = 24; % Pulsos por vuelta (CHANGE en canal A)
+
+R = 6; % Resistencia de armadura      [Ohm]
+
+v_ab = 4.93; % Tension cto abierto [V]
+v_c = 3.53; % Tension cto cerrado [V]
+
+i = 0.5e-3; % Corriente estable [mA]
+i_stall = 0.5;  % Corriente stall [A]
+i_arr = 0.1e-3;  % Corriente de arranque [mA]
+
+w_est = 260.752; % Velocidad angular una vez estabilidado [rad/s]
+
+tau_real = 0.075 ; % Instante donde w es 63.2 % [s]
 
 %% Constantes fisicas
 
-J  = 0.01244;    % Momento de inercia           [kg·m^2]
-b  = 4.7047e-08;    % Fricción viscosa             [N·m·s/rad]
-Ke = 0.01879;    % Cte. fuerza contraelectromotriz [V·s/rad]
-Kt = 0.01879;    % Cte. de par                  [N·m/A]
-R  = 6;          % Resistencia de armadura      [Ohm]
 L  = 0.0711e-3;     % Inductancia de armadura      [H] (0.0711 mH)
+
+Ke = (v_ab - i * R) / w_est;    % Cte. fuerza contraelectromotriz [V·s/rad]
+Kt = Ke;    % Cte. de par                  [N·m/A]
+
+J  = (tau_real * Ke * Kt / R);    % Momento de inercia           [kg·m^2]
+b  = (Kt * i) / w_est;    % Fricción viscosa             [N·m·s/rad]
 
 
 %% Parámetros derivados
@@ -34,27 +48,28 @@ assert(Ts <= tau_m, 'Ts debe ser <= tau_m (estabilidad y sin oscilaciones)');
 
 csv_path = fullfile(fileparts(mfilename('fullpath')), '..', 'data', 'fase1.csv');
 datos = readmatrix(csv_path);
+
 t_real = datos(:, 1) * 1e-6;   % [s]
 pulsos = datos(:, 2);
 
 % k_w = (W + 1):numel(t_real);
 k_w = 2:numel(t_real);
-w_real = 2*pi/ENCODER_PPR * (pulsos(k_w) - pulsos(k_w - 1)) ./ (t_real(k_w) - t_real(k_w - 1));
+w_real = 2*pi/encoder_ppr * (pulsos(k_w) - pulsos(k_w - 1)) ./ (t_real(k_w) - t_real(k_w - 1));
 t_w = t_real(k_w);
 
 % Constante de tiempo real: primer instante con 63.2 % de la velocidad de establecimiento
-w_ss_real = mean(w_real(end - floor(numel(w_real)/5):end));   % último 20 % del ensayo
-tau_real = t_w(find(w_real >= 0.632*w_ss_real, 1));
-fprintf('tau_m real (63.2 %%)    = %.2f ms\n', tau_real*1e3);
+% w_ss_real = mean(w_real(end - floor(numel(w_real)/5):end));   % último 20 % del ensayo
+% tau_real = t_w(find(w_real >= 0.632*w_ss_real, 1));
+% fprintf('tau_m real (63.2 %%)    = %.2f ms\n', tau_real*1e3);
 
 %% Simulacion
 
 [t_vec, x_vec] = simulate_euler(x0, u, tau_m, K, Ts, N);
 
-w_exacta = K*u*(1 - exp(-t_vec/tau_m)) + x0*exp(-t_vec/tau_m);
+% w_exacta = K*u*(1 - exp(-t_vec/tau_m)) + x0*exp(-t_vec/tau_m);
 
 figure;
-% plot(t_vec, x_vec, 'o-', 'DisplayName', sprintf('Euler (T_s = %.2f ms)', Ts*1e3));
+plot(t_vec, x_vec, 'o-', 'DisplayName', sprintf('Simulacion Euler (T_s = %.2f ms)', Ts*1e3));
 hold on;
 % plot(t_vec, w_exacta, '-', 'LineWidth', 1.5, 'DisplayName', 'Exacta (continuo)');
 plot(t_w, w_real, '-', 'LineWidth', 1.5, 'DisplayName', 'Real (encoder)');
