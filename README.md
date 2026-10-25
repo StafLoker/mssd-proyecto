@@ -394,7 +394,7 @@ $$
 
 **Espacio de Eventos de Salida ($Y$)**
 
-Niveles de tensión lógica entregados al pin de entrada digital del Arduino. Gracias a la resistencia pull-down de $6\text{ k}\Omega$, el valor predeterminado sin pulsación es estrictamente $0\text{ V}$ (evitando el estado flotante): 
+Niveles de tensión lógica entregados al pin de entrada digital del Arduino. Gracias a la resistencia pull-down de $10\text{ k}\Omega$, el valor predeterminado sin pulsación es estrictamente $0\text{ V}$ (evitando el estado flotante): 
 
 $$
 Y = \{\text{Low } (0\text{ V}), \text{ High }(5\text{ V})\}
