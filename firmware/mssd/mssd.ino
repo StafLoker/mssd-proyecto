@@ -14,13 +14,13 @@
 * - Power Supply Module
 */
 
-#include <DHT.h>
+// #include <DHT.h>
 
 // == Pins ==
 
 #define BUTTON_PIN 5
 
-#define SENSOR_PIN 4
+// #define SENSOR_PIN 4
 
 #define DRIVER_ENABLE_PIN 6  // PWM
 #define DRIVER_DIR_A_PIN 7
@@ -30,14 +30,14 @@
 #define DRIVER_ENCODER_OUT_B 3
 
 // == Other ==
-#define SENSOR_TYPE DHT11
+// #define SENSOR_TYPE DHT11
 
-const float T_MIN = 20.0;
-const float T_MAX = 30.0;
+// const float T_MIN = 20.0;
+// const float T_MAX = 30.0;
 
-const float ENCODER_PPR = 24.0;
-const unsigned long SENSOR_CAPTURE_INTERVAL_MS = 2000;
-const unsigned long SPEED_CAPTURE_INTERVAL_MS = 250;
+// const float ENCODER_PPR = 24.0;
+// const unsigned long SENSOR_CAPTURE_INTERVAL_MS = 2000;
+// const unsigned long SPEED_CAPTURE_INTERVAL_MS = 250;
 
 enum class RotationDirection {
   FORWARD,
@@ -120,20 +120,32 @@ public:
 
 // == Help functions ==
 
-int temperatureToPWM(float temperature) {
-  float output = (temperature - T_MIN)
-                 / (T_MAX - T_MIN) * 255.0;
+// int temperatureToPWM(float temperature) {
+//   float output = (temperature - T_MIN)
+//                  / (T_MAX - T_MIN) * 255.0;
 
-  return (int)constrain(output, 0, 255);
-}
+//   return (int)constrain(output, 0, 255);
+// }
 
-float pwmToVoltage(int pwm) {
-  return pwm * (5.0 / 255.0);
-}
+// float pwmToVoltage(int pwm) {
+//   return pwm * (5.0 / 255.0);
+// }
 
-float rpmToAngularVelocity(float rpm) {
-  return rpm * (2.0 * PI / 60.0);
-}
+// float rpmToAngularVelocity(float rpm) {
+//   return rpm * (2.0 * PI / 60.0);
+// }
+
+// == Global vars ==
+
+// DHT sensor(SENSOR_PIN, SENSOR_TYPE);
+Motor motor(DRIVER_ENABLE_PIN, DRIVER_DIR_A_PIN, DRIVER_DIR_B_PIN);
+
+volatile unsigned long encoderPulses = 0;
+
+// unsigned long lastSensorTime = 0;
+// unsigned long lastSpeedTime = 0;
+
+int lastButtonState = LOW;
 
 // == Interupciones ==
 
@@ -151,35 +163,26 @@ unsigned long readEncoderPulses(bool reset) {
   return pulses;
 }
 
-// == Global vars ==
-
-DHT sensor(SENSOR_PIN, SENSOR_TYPE);
-Motor motor(DRIVER_ENABLE_PIN, DRIVER_DIR_A_PIN, DRIVER_DIR_B_PIN);
-
-volatile unsigned long encoderPulses = 0;
-
-unsigned long lastSensorTime = 0;
-unsigned long lastSpeedTime = 0;
-
-int lastButtonState = LOW;
+// == Main logic ==
 
 void setup() {
   Serial.begin(115200);
+  Serial.println("t_us,pulses,direction"); // Fase 2
 
   // Modelo
   pinMode(BUTTON_PIN, INPUT);
   pinMode(DRIVER_ENCODER_OUT_A, INPUT);
   pinMode(DRIVER_ENCODER_OUT_B, INPUT);
 
-  sensor.begin();
+  // sensor.begin();
   motor.init();
 
   attachInterrupt(
     digitalPinToInterrupt(DRIVER_ENCODER_OUT_A),
     encoderISR,
     CHANGE);
-  
-  delay(1500); // delay pequeno para tomar medidas en Fase 1
+
+  motor.change_speed(Motor::MAX_SPEED); // ~5V (Fase 2)
 }
 
 // Fase 1: respuesta al escalón, solo captura y exporta datos crudos (CSV)
@@ -205,17 +208,41 @@ void setup() {
 //     while ((long)(micros() - next) < 0) {}
 //     unsigned long t = micros() - t0;
 
-//     unsigned long pulses = readEncoderPulses(false);
-
 //     Serial.print(t);
 //     Serial.print(',');
-//     Serial.println(pulses);
+//     Serial.println(readEncoderPulses(false));
 
 //     next += SAMPLE_US;
 //   }
 
 //   motor.change_speed(Motor::STOP);
 // }
+
+// Fase 2: escalón continuo a 5 V, el botón invierte el sentido de giro.
+// Solo captura y exporta datos crudos (CSV); direction: 0 = FORWARD, 1 = INVERSE
+const unsigned long SAMPLE_US = 5000;      // periodo de muestreo
+
+void loop() {
+  static unsigned long t0 = micros();
+  static unsigned long next = t0;
+  int buttonState;
+
+  if ((long)(micros() - next) >= 0) {
+    buttonState = digitalRead(BUTTON_PIN);
+    if (buttonState == HIGH && lastButtonState == LOW) {
+      motor.swap_direction();
+    }
+    lastButtonState = buttonState;
+
+    Serial.print(micros() - t0);
+    Serial.print(',');
+    Serial.print(readEncoderPulses(false));
+    Serial.print(',');
+    Serial.println(motor.direction() == RotationDirection::FORWARD ? 0 : 1);
+
+    next += SAMPLE_US;
+  }
+}
 
 /* Codigo de logica de programa completo
 void loop() {
