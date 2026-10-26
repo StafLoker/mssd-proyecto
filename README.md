@@ -493,6 +493,45 @@ stateDiagram-v2
     Presionado --> Reposo : x = soltar
 ```
 
+#### Modelo híbrido
 
+Se acopla el botón (DEVS, eventos discretos) con el motor (DTSS, tiempo discreto de paso fijo $T_s$). No se formaliza como autómata híbrido; se resuelve con un acoplamiento directo.
 
+##### Esquema acoplado
 
+```mermaid
+flowchart LR
+    B["Botón (DEVS)"] -- "Low / High" --> F["Sentido (flip-flop)"]
+    F -- "s = ±1" --> D["Driver (ganancia s)"]
+    D -- "v = s·u" --> M["Motor (DTSS)"]
+    M --> W["ω(k)"]
+```
+
+1. **Botón.** Es el DEVS de arriba. Recibe `Pulsar` y `Soltar` y saca `Low`/`High` según su estado.
+2. **Sentido.** Es un flip-flop. En cada flanco de subida (`Low` → `High`) de la salida del botón, invierte el sentido de giro.
+3. **Driver.** Deja de ser identidad. Pasa a tener ganancia $s \in \{+1, -1\}$, por lo que la tensión que llega al motor es $v(k) = s(k)\,u$.
+4. **Motor.** Es el DTSS de primer orden de la primera fase, sin cambios, con la entrada $v(k)$:
+
+$$
+\omega(k+1) = \Big(1 - \frac{T_s}{\tau_m}\Big)\omega(k) + \frac{T_s K}{\tau_m}\, s(k)\, u
+$$
+
+##### Cómo se simula
+
+- Los eventos del botón se toman de la captura real. El instante de cada `Pulsar` es el punto donde cambia la columna `direction`.
+- El firmware solo registra el flanco de subida, así que no se mide cuándo se suelta el botón. Cada `Soltar` se coloca $0{,}1$ s después del `Pulsar` (valor supuesto). No afecta al resultado, porque el sentido solo depende del flanco de subida.
+- En cada paso $k$, $s(k) = (-1)^{n(k)}$, siendo $n(k)$ el número de flancos de subida con $t \le kT_s$.
+- Se ejecuta el mismo Euler hacia adelante con la entrada $s(k)\,u$, durante toda la captura, y se compara con la velocidad medida mediante el RMSE (como en la primera fase).
+- El encoder tiene un solo canal y solo cuenta pulsos, así que mide $|\omega|$. Para comparar, a la velocidad medida se le pone el signo del sentido de giro que manda el firmware.
+
+#### Resultados
+
+Para validar el modelo utilizamos el RMSE.
+
+Nuestros resultados son RMSE = 38.14 rad/s (14.4 % de K*u)
+
+<img src="assets/resultados_fase_2.png" width="800" />
+
+#### Conclusiones
+
+Se puede ver que al introducir el cambio de giro de motor nuestro modelo aumenta el error casi a 10% por cierto que es bastante.
