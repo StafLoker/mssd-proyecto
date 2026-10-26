@@ -52,7 +52,6 @@ datos = readmatrix(csv_path);
 t_real = datos(:, 1) * 1e-6;   % [s]
 pulsos = datos(:, 2);
 
-% k_w = (W + 1):numel(t_real);
 k_w = 2:numel(t_real);
 w_real = 2*pi/encoder_ppr * (pulsos(k_w) - pulsos(k_w - 1)) ./ (t_real(k_w) - t_real(k_w - 1));
 t_w = t_real(k_w);

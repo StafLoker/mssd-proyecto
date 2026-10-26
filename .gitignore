@@ -4,6 +4,7 @@
 
 TEMP.md
 __pycache__/
+*.asv
 
 ###########
 ## MacOS ##
