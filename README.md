@@ -34,11 +34,9 @@ Entradas del sistema:
 Salidas del sistema:
 - Velocidad (w(t)) de motor
 
-### Fotos de cto implementado
+### Foto del cto implementado
 
-**TODO: CAMBIAR**
-
-<img src="assets/MSSD-layout.png" width="400" />
+<img src="assets/mssd-impl-fisica.jpeg" width="400" />
 
 
 ## Modelización y simulation
@@ -534,4 +532,4 @@ Nuestros resultados son RMSE = 38.14 rad/s (14.4 % de K*u)
 
 #### Conclusiones
 
-Se puede ver que al introducir el cambio de giro de motor nuestro modelo aumenta el error casi a 10% por cierto que es bastante.
+Se puede ver que al introducir el cambio de giro de motor nuestro modelo aumenta el error casi a 8% que es bastante.
