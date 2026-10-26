@@ -513,7 +513,7 @@ flowchart LR
 4. **Motor.** Es el DTSS de primer orden de la primera fase, sin cambios, con la entrada $v(k)$:
 
 $$
-\omega(k+1) = \Big(1 - \frac{T_s}{\tau_m}\Big)\omega(k) + \frac{T_s K}{\tau_m}\, s(k)\, u
+\omega(k+1) = \Big(1 - \frac{T_s}{\tau_m}\Big)\omega(k) + \frac{T_s K}{\tau_m}\ s(k)\ u
 $$
 
 ##### Cómo se simula
