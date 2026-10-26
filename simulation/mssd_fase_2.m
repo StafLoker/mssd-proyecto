@@ -38,7 +38,9 @@ x0 = 0;                        % Motor parado [rad/s]
 u  = 5;                        % Tensión constante [V]
 s  = 10;                       % Muestras por tau_m
 Ts = tau_m / s;                % Periodo de muestreo [s]
-N  = ceil(10 / Ts);           % Sumalar durante 10s
+N  = ceil(10 / Ts);          % Simular toda la captura [10 s]
+
+xss = K*u;                     % Regimen permanente
 
 assert(Ts <= tau_m, 'Ts debe ser <= tau_m (estabilidad y sin oscilaciones)');
 
@@ -66,27 +68,39 @@ t_pulso = t_real(k_pulso);
 
 %% Simulacion
 
-% [t_vec, x_vec] = simulate_euler(x0, u, tau_m, K, Ts, N);
+t_vec = (0:N) * Ts;
+
+% Boton (DEVS): eventos Pulsar/Soltar. El firmware solo registra el flanco de subida,
+% asi que la duracion de cada pulsacion se supone (no afecta al sentido).
+t_hold = 0.1;                                                % duracion asumida de la pulsacion [s]
+t_evento = reshape([t_pulso, t_pulso + t_hold]', [], 1);     % Pulsar, Soltar, Pulsar, ...
+x_evento = repmat([1; 2], numel(t_pulso), 1);                % 1 = Pulsar, 2 = Soltar
+y_boton = simulate_boton(x_evento);                          % 0 = Low, 1 = High
+
+% Flip-flop de sentido: cada flanco de subida del boton invierte el signo de la tension (driver +-1)
+t_flanco = t_evento(diff([0; y_boton]) == 1);
+sentido = 1 - 2*mod(sum(t_vec(:) >= t_flanco(:)', 2), 2)';
+x_vec = simulate_euler(x0, sentido * u, tau_m, K, Ts);
 
 %% RMSE simulacion vs real
 
 % La simulacion se interpola en los instantes del encoder, dentro de su rango
-% en_rango = t_w >= t_vec(1) & t_w <= t_vec(end); % vector bool donde T_sim coinicide con T_real
-% w_sim = interp1(t_vec, x_vec, t_w(en_rango));
-% rmse = sqrt(mean((w_sim - w_real(en_rango)).^2));
+en_rango = t_w >= t_vec(1) & t_w <= t_vec(end); % vector bool donde T_sim coinicide con T_real
+w_sim = interp1(t_vec, x_vec, t_w(en_rango));
+rmse = sqrt(mean((w_sim - w_real(en_rango)).^2));
 
 %% Dibujar resultado
 
 figure;
-% Prioridad visual: real > Euler
-% plot(t_vec, x_vec, 'o-', 'LineWidth', 1.5, 'MarkerSize', 5, 'Color', [0.85 0.33 0.10], 'DisplayName', sprintf('Simulacion Euler (T_s = %.2f ms)', Ts*1e3));
+% Prioridad visual: Euler > real 
 hold on;
 yline(0, '-', 'Color', [0.3 0.3 0.3], 'LineWidth', 1, 'HandleVisibility', 'off');
 xline(t_pulso, ':', 'Color', [0.85 0.33 0.10], 'LineWidth', 1.5, 'HandleVisibility', 'off');
 plot(NaN, NaN, ':', 'Color', [0.85 0.33 0.10], 'LineWidth', 1.5, 'DisplayName', 'Pulsacion del boton');
-plot(t_w, w_real, '-', 'LineWidth', 2.5, 'Color', [0 0.447 0.741], 'DisplayName', 'Real (encoder)');
-% text(0.98, 0.35, sprintf('RMSE = %.2f rad/s (%.1f %% de xss)', rmse, 100*rmse/xss), ...
-%     'Units', 'normalized', 'HorizontalAlignment', 'right', 'BackgroundColor', 'w', 'EdgeColor', 'k');
+plot(t_vec, x_vec, '-', 'LineWidth', 1.5, 'Color', [0.85 0.33 0.10], 'DisplayName', sprintf('Simulacion Euler (T_s = %.2f ms)', Ts*1e3));
+plot(t_w, w_real, '-', 'Color', [0 0.447 0.741], 'DisplayName', 'Real (encoder)');
+text(0.98, 0.35, sprintf('RMSE = %.2f rad/s (%.1f %% de xss)', rmse, 100*rmse/xss), ...
+    'Units', 'normalized', 'HorizontalAlignment', 'right', 'BackgroundColor', 'w', 'EdgeColor', 'k');
 xlabel('t [s]');
 ylabel('\omega [rad/s]');
 title('Velocidad angular con inversión de giro por botón');
@@ -95,14 +109,27 @@ grid on;
 
 %% Funciones
 
-function [t_vec, x_vec] = simulate_euler(x0, u, tau_m, K, Ts, N)
-k_vec = 0:N;
-t_vec = k_vec * Ts;
-
-x_vec = zeros(size(t_vec));
+% DTSS del motor
+function x_vec = simulate_euler(x0, u_vec, tau_m, K, Ts)
+x_vec = zeros(size(u_vec));
 x_vec(1) = x0;
 
-for k = 1:N
-    x_vec(k + 1) = (1 - Ts/tau_m) * x_vec(k) + (Ts*K/tau_m) * u;
+for k = 1:numel(u_vec) - 1
+    x_vec(k + 1) = (1 - Ts/tau_m) * x_vec(k) + (Ts*K/tau_m) * u_vec(k);
+end
+end
+
+% DEVS del boton: S = {0 Reposo, 1 Presionado}, X = {1 Pulsar, 2 Soltar}, lambda(s) = s (Low/High)
+function y = simulate_boton(x)
+s = 0;
+y = zeros(size(x));
+
+for n = 1:numel(x)
+    if s == 0 && x(n) == 1
+        s = 1;
+    elseif s == 1 && x(n) == 2
+        s = 0;
+    end
+    y(n) = s;
 end
 end
