@@ -66,14 +66,27 @@ t_w = t_real(k_w);
 
 [t_vec, x_vec] = simulate_euler(x0, u, tau_m, K, Ts, N);
 
-% w_exacta = K*u*(1 - exp(-t_vec/tau_m)) + x0*exp(-t_vec/tau_m);
+% La exacta
+w_exacta = K*u*(1 - exp(-t_vec/tau_m)) + x0*exp(-t_vec/tau_m);
+
+%% RMSE simulacion vs real
+
+% La simulacion se interpola en los instantes del encoder, dentro de su rango
+en_rango = t_w >= t_vec(1) & t_w <= t_vec(end); % vector bool donde T_sim coinicide con T_real
+w_sim = interp1(t_vec, x_vec, t_w(en_rango));
+rmse = sqrt(mean((w_sim - w_real(en_rango)).^2));
+
+%% Dibujar resultado
 
 figure;
-plot(t_vec, x_vec, 'o-', 'DisplayName', sprintf('Simulacion Euler (T_s = %.2f ms)', Ts*1e3));
+% Prioridad visual: real > Euler > exacta > regimen permanente
+plot(t_vec, w_exacta, '-', 'LineWidth', 1, 'Color', [0.75 0.75 0.75], 'DisplayName', 'Exacta (continuo)');
 hold on;
-% plot(t_vec, w_exacta, '-', 'LineWidth', 1.5, 'DisplayName', 'Exacta (continuo)');
-plot(t_w, w_real, '-', 'LineWidth', 1.5, 'DisplayName', 'Real (encoder)');
-yline(xss, '--', 'DisplayName', 'regimen permanente');
+yline(xss, ':', 'Color', [0.5 0.5 0.5], 'LineWidth', 1, 'DisplayName', 'regimen permanente');
+plot(t_vec, x_vec, 'o-', 'LineWidth', 1.5, 'MarkerSize', 5, 'Color', [0.85 0.33 0.10], 'DisplayName', sprintf('Simulacion Euler (T_s = %.2f ms)', Ts*1e3));
+plot(t_w, w_real, '-', 'LineWidth', 2.5, 'Color', [0 0.447 0.741], 'DisplayName', 'Real (encoder)');
+text(0.98, 0.35, sprintf('RMSE = %.2f rad/s (%.1f %% de xss)', rmse, 100*rmse/xss), ...
+    'Units', 'normalized', 'HorizontalAlignment', 'right', 'BackgroundColor', 'w', 'EdgeColor', 'k');
 xlabel('t [s]');
 ylabel('\omega [rad/s]');
 title(sprintf('Respuesta al escalón de %g V', u));

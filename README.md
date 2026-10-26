@@ -386,7 +386,19 @@ $$
 
 #### Resultados
 
+Para validar el modelo utilizamos el RMSE.
+
+Nuestros resultados son RMSE = 21.19 rad/s (8.0 % de xss).
+
 <img src="assets/resultados_fase_1.png" width="800" />
+
+#### Conclusiones
+
+Primero la parte de verification de modelo, tenemos estabilidad numérica y también evitamos las oscilaciones. Por lo que dicha etapa pasada.
+
+EL error RMSE es mayor que umbral comun 5%. Sin embargo, no es un error tan enorme para las simplificaciones aplicados a nuestro modelo. Por lo que no estamos muy lejos de la realidad. Se puede seguir con modelo aplicado sin mejoras del modelo planteado.
+
+*P.S Para mejorar se puede consider la parte electrica de motor.*
 
 ---
 

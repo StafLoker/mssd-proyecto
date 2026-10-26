@@ -182,46 +182,42 @@ void setup() {
   delay(1500); // delay pequeno para tomar medidas en Fase 1
 }
 
-void loop() {
-  motor.change_speed(Motor::MAX_SPEED);
-}
-
 // Fase 1: respuesta al escalón, solo captura y exporta datos crudos (CSV)
-const unsigned long SAMPLE_US = 5000;      // periodo de muestreo
-const unsigned long DURATION_US = 1000000; // duración del ensayo (1 s)
+// const unsigned long SAMPLE_US = 5000;      // periodo de muestreo
+// const unsigned long DURATION_US = 1000000; // duración del ensayo (1 s)
 
-bool done = false;
+// bool done = false;
 
-void loop() {
-  if (done) {
-    return;
-  }
-  done = true;
+// void loop() {
+//   if (done) {
+//     return;
+//   }
+//   done = true;
 
-  Serial.println("t_us,pulses");
+//   Serial.println("t_us,pulses");
 
-  // == Escalón + captura ==
-  unsigned long t0 = micros();
-  unsigned long next = t0;
-  motor.change_speed(Motor::MAX_SPEED); // ~5V
+//   // == Escalón + captura ==
+//   unsigned long t0 = micros();
+//   unsigned long next = t0;
+//   motor.change_speed(Motor::MAX_SPEED); // ~5V
 
-  while (micros() - t0 < DURATION_US) {
-    while ((long)(micros() - next) < 0) {}
-    unsigned long t = micros() - t0;
+//   while (micros() - t0 < DURATION_US) {
+//     while ((long)(micros() - next) < 0) {}
+//     unsigned long t = micros() - t0;
 
-    unsigned long pulses = readEncoderPulses(false);
+//     unsigned long pulses = readEncoderPulses(false);
 
-    Serial.print(t);
-    Serial.print(',');
-    Serial.println(pulses);
+//     Serial.print(t);
+//     Serial.print(',');
+//     Serial.println(pulses);
 
-    next += SAMPLE_US;
-  }
+//     next += SAMPLE_US;
+//   }
 
-  motor.change_speed(Motor::STOP);
-}
+//   motor.change_speed(Motor::STOP);
+// }
 
-/* Fase 2
+/* Codigo de logica de programa completo
 void loop() {
   unsigned long now = millis();
 
