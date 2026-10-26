@@ -58,8 +58,8 @@ t_w = t_real(k_w);
 
 % Constante de tiempo real: primer instante con 63.2 % de la velocidad de establecimiento
 w_ss_real = mean(w_real(end - floor(numel(w_real)/5):end));   % último 20 % del ensayo
-tau_real = t_w(find(w_real >= 0.632*w_ss_real, 1));
-fprintf('tau_m real (63.2 %%)    = %.2f ms\n', tau_real*1e3);
+tau_real_cal = t_w(find(w_real >= 0.632*w_ss_real, 1));
+fprintf('tau_m real (63.2 %%)    = %.2f ms\n', tau_real_cal*1e3);
 
 %% Simulacion
 
