@@ -530,4 +530,14 @@ Nuestros resultados son RMSE = 38.14 rad/s (14.4 % de K*u)
 
 #### Conclusiones
 
-Se puede ver que al introducir el cambio de giro de motor nuestro modelo aumenta el error casi a 8% que es bastante.
+Se puede ver que al introducir el cambio de giro de motor nuestro modelo aumenta el error casi a 8% que es bastante. La posible razón del aumento puntual del error durante el régimen transitorio puede deberse a la resolución limitada del encoder, que mide mediante pulsos enteros. Esta limitación introduce discrepancias en los valores medidos respecto a los valores teóricos o simulados.
+
+Se puede observar que al cambiar el sentido contrario parece que la velocidad angular w es mas rápida (ver la table de abajo). Eso posiblemente debido a propiedades de driver con puente H que puede dar el voltaje un poco mas alto para el sentido contrario o asimetría de la posición de las escobillas respecto al eje neutro del motor DC.
+
+En cualquier caso dichos ruido de motor real que no se cuenta en simulation también afecta al error final del nuestro modelo.
+
+| Tramo                   | ω media     | Pulsos por muestra de 5 ms |
+| ----------------------- | ----------- | -------------------------- |
+| Adelante 1 (0.6-1.78 s) | 258.9 rad/s | 4.945                      |
+| Atrás (2.5-5.4 s)       | 267.1 rad/s | 5.102                      |
+| Adelante 2 (6.0-8.4 s)  | 257.6 rad/s | 4.921                      |
