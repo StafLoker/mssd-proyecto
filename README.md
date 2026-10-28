@@ -58,6 +58,10 @@ Sera en dos fases. En la primera se resuelve la modelización y simulacion + com
 
 En la segunda fase, se añadirá el sensor (no se simula sino considera como entrada *u(t)*) y boton.
 
+#### Supuestos
+- Lineaidad: este modelo es lineal debido al proceso de discretización.
+- Equilibrio: la velocidad angular del motor en un instante t alcanzara su equilibrio.
+- Infinitud: consideramos el horizonte temporal infinito debido a que el motor de manera indefinida.
 ---
 
 ### Primera fase
