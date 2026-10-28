@@ -62,9 +62,7 @@ En la segunda fase, se añadirá el sensor (no se simula sino considera como ent
 
 ### Primera fase
 
-Primero, el driver. Como se ha mencionado no se cuenta como un componente que influye a la salida de motor. Sin embargo en esta fase se considera que se rota en un sentido, o sea *DIR_A = 5V* y *DIR_B = 0V*. Al ser que se simplifica que solo se rota en un sentido (Forward) por lo que la salidas de driver sera: *OUT_A = V_in V + 700 mA* ***(pendiente de verificar valor de corriente final)*** y *OUT_B = 0 V*. Corriente de salida: **700 mA** y Rango de tensiones: **0V - 5V** (valor de corriente cogidos de este [fuente](https://wiki.elegoo.com/oshw-getting-started-&-kits/dc-motor-uno)).
-
-Ahora se queda la parte interesante es Motor DC con encoder.
+Primero, el driver. Como se ha mencionado no se cuenta como un componente que influye a la salida de motor. Sin embargo en esta fase se considera que se rota en un sentido, o sea entradas de driver *DIR_A = 5V* y *DIR_B = 0V*. Al ser que se simplifica que solo se rota en un sentido (Forward) por lo que la salidas de driver sera: *OUT_A = V_in V + 0,5 mA* y *OUT_B = 0 V*. Corriente de salida: **0,5 mA** y Rango de tensiones: **0V - 5V** (valor de corriente cogidos de este [fuente](https://wiki.elegoo.com/oshw-getting-started-&-kits/dc-motor-uno)). Solo se va a modelar con la tension máximo de rango que es **5V**
 
 #### Motor DC
 
@@ -148,12 +146,12 @@ El sistema tiene dos almacenes de energía (la bobina $L$ y la inercia $J$), es 
 ##### Reducción a orden 1
 
 > [!NOTE]
-> Justification porque se desprecia la parte de dominio eléctrico sin contar es un limitation planteado para modelado. ***(pendiente de verificar valores)***
+> Justification porque se desprecia la parte de dominio eléctrico sin contar es un limitation planteado para modelado.
 
 $$
-\tau_e = \frac{L}{R} = \frac{0{,}0711\cdot10^{-3}}{10{,}3} \approx 7\ \mu\text{s}
+\tau_e = \frac{L}{R} = \frac{0{,}0711\cdot10^{-3}}{6} \approx 11{,}85\ \mu\text{s}
 \qquad\ll\qquad
-\tau_m \approx 36\ \text{ms}
+\tau_m \approx 75\ \text{ms}
 $$
 
 Se supone que la corriente alcanza su valor de equilibrio de forma instantánea, $L\ di/dt \approx 0$:
